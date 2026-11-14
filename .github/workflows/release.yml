@@ -67,13 +67,13 @@ jobs:
         run: python3 tool/release.py signing
       - name: Build APK
         if: matrix.platform == 'android'
-        run: flutter build apk --release --no-pub
+        run: flutter build apk --release
       - name: Build Linux
         if: matrix.platform == 'linux'
-        run: flutter build linux --release --no-pub
+        run: flutter build linux --release
       - name: Build Windows
         if: matrix.platform == 'windows'
-        run: flutter build windows --release --no-pub
+        run: flutter build windows --release
       - name: Package complete application
         run: python tool/release.py package ${{ matrix.platform }}
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

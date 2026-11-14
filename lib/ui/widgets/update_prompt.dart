@@ -48,7 +48,10 @@ class _UpdatePromptHostState extends State<UpdatePromptHost>
   @override
   void didUpdateWidget(covariant UpdatePromptHost oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.ready && !oldWidget.ready) _schedule();
+    if (widget.ready && !oldWidget.ready) {
+      _showWhenReady();
+      _schedule();
+    }
   }
 
   void _schedule() {

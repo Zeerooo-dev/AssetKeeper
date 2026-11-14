@@ -102,7 +102,7 @@ def gh(*args, **kwargs):
 
 
 def publish():
-    name, _ = version()
+    name, code = version()
     tag = f'v{name}'
     existing = subprocess.run(['gh', 'release', 'view', tag, '--json', 'isDraft'],
                               cwd=ROOT, text=True, capture_output=True)
@@ -115,6 +115,11 @@ def publish():
         old = json.loads(latest.stdout)['tagName'].removeprefix('v')
         if tuple(map(int, name.split('.'))) <= tuple(map(int, old.split('.'))):
             raise ValueError('New releases must have a higher version')
+        previous = subprocess.check_output(
+            ['gh', 'release', 'download', f'v{old}', '--pattern', 'release-info.json', '--output', '-'],
+            cwd=ROOT, text=True)
+        if code <= json.loads(previous)['build_number']:
+            raise ValueError('New releases must also increase the Android build number')
     files = [OUTPUT / f'AssetKeeper-{tag}-{suffix}' for suffix in
              ['android.apk', 'linux-x64.tar.gz', 'windows-x64.zip']]
     if not all(p.is_file() and p.stat().st_size for p in files):
@@ -123,6 +128,9 @@ def publish():
     subprocess.run(['git', 'archive', '--format=zip', '--prefix=AssetKeeper/',
                     f'--output={source}', 'HEAD'], cwd=ROOT, check=True)
     files.append(source)
+    manifest = OUTPUT / 'release-info.json'
+    manifest.write_text(json.dumps({'version': name, 'build_number': code, 'android_package': 'com.zeerooo.assetkeeper'}) + '\n')
+    files.append(manifest)
     sums = OUTPUT / 'SHA256SUMS'
     checksums = []
     for path in files:

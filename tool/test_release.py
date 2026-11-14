@@ -45,6 +45,15 @@ class ReleaseTests(unittest.TestCase):
                 release.publish()
             gh.assert_not_called()
 
+    def test_android_build_number_must_increase(self):
+        missing = subprocess.CompletedProcess([], 1, '', 'not found')
+        latest = subprocess.CompletedProcess([], 0, json.dumps({'tagName': 'v1.0.3'}), '')
+        with patch.object(release.subprocess, 'run', side_effect=[missing, latest]), patch.object(
+                release.subprocess, 'check_output', return_value=json.dumps({'build_number': 5})), patch.object(release, 'gh') as gh:
+            with self.assertRaisesRegex(ValueError, 'Android build number'):
+                release.publish()
+            gh.assert_not_called()
+
 
 if __name__ == '__main__':
     unittest.main()
