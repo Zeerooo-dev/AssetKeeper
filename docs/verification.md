@@ -124,3 +124,19 @@ clean static mark and matching background, with immediate native-overlay removal
 A widget regression covers the Android-specific handoff and early dismissal;
 the Android resource/Kotlin compiler validates the guarded native callback.
 Physical-device confirmation of the fix remains pending.
+
+## GitHub updates and release builds, 1.0.4+5
+
+69 Flutter tests passed; the analyzer reported no issues. New tests cover exact
+platform downloads, version ordering, rejection of foreign URLs/drafts/previews,
+offline checks, setup/editor deferral, manual rechecks and small-phone large-text
+popup layouts in light and dark themes. Release-script tests also guard against
+partial publication, replacement of published files, non-increasing versions and
+Android build numbers, and missing SQLCipher libraries.
+
+Local production APK and Linux builds compiled. Android packaging checks the
+public production certificate fingerprint, package identity, version code/name
+and SQLCipher libraries for all three APK architectures. GitHub Actions runs
+validation and separate Android/Linux/Windows builds before publishing a complete
+stable release. Build logs and final artifacts are available in the repository.
+This does not constitute physical Android/Windows installation acceptance.

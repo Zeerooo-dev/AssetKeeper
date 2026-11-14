@@ -71,20 +71,20 @@ def package(platform):
             raise ValueError('APK package identity or version does not match this release')
         with zipfile.ZipFile(apk) as archive:
             for abi in ['arm64-v8a', 'armeabi-v7a', 'x86_64']:
-                if not any(p.startswith(f'lib/{abi}/') and 'sqlite3' in p for p in archive.namelist()):
+                if f'lib/{abi}/libsqlcipher.so' not in archive.namelist():
                     raise ValueError(f'Missing encrypted SQLite library for {abi}')
         shutil.copy2(apk, OUTPUT / f'{prefix}-android.apk')
     elif platform == 'linux':
         bundle = ROOT / 'build/linux/x64/release/bundle'
-        if not (bundle / 'assetkeeper').is_file():
-            raise ValueError('Linux executable missing')
+        if not (bundle / 'assetkeeper').is_file() or not (bundle / 'lib/libsqlcipher.so').is_file():
+            raise ValueError('Linux executable or SQLCipher library missing')
         with tarfile.open(OUTPUT / f'{prefix}-linux-x64.tar.gz', 'w:gz') as archive:
             archive.add(bundle, arcname='AssetKeeper')
             archive.add(ROOT / 'docs/INSTALL.md', arcname='AssetKeeper/INSTALL.md')
     elif platform == 'windows':
         bundle = ROOT / 'build/windows/x64/runner/Release'
-        if not (bundle / 'assetkeeper.exe').is_file():
-            raise ValueError('Windows executable missing')
+        if not (bundle / 'assetkeeper.exe').is_file() or not (bundle / 'sqlcipher.dll').is_file():
+            raise ValueError('Windows executable or SQLCipher library missing')
         for name in ['msvcp140.dll', 'vcruntime140.dll', 'vcruntime140_1.dll']:
             shutil.copy2(Path(os.environ['WINDIR']) / 'System32' / name, bundle / name)
         with zipfile.ZipFile(OUTPUT / f'{prefix}-windows-x64.zip', 'w', zipfile.ZIP_DEFLATED) as archive:
