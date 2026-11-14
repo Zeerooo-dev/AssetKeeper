@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/assetkeeper_splash_static">
+    <target android:name="ring_rotate" android:animation="@animator/assetkeeper_ring_spin"/>
+    <target android:name="mark" android:animation="@animator/assetkeeper_mark_pop"/>
+</animated-vector>
