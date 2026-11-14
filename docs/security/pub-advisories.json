@@ -1,5 +1,5 @@
 {
-  "checked_at_utc": "2026-11-14T16:47:20.034614+00:00",
+  "checked_at_utc": "2026-11-14T18:34:43.672243+00:00",
   "source": "https://api.osv.dev/v1/querybatch",
   "packages": [
     {
@@ -341,6 +341,22 @@
     {
       "package": {
         "ecosystem": "Pub",
+        "name": "package_info_plus"
+      },
+      "version": "10.2.2",
+      "result": {}
+    },
+    {
+      "package": {
+        "ecosystem": "Pub",
+        "name": "package_info_plus_platform_interface"
+      },
+      "version": "4.1.0",
+      "result": {}
+    },
+    {
+      "package": {
+        "ecosystem": "Pub",
         "name": "path"
       },
       "version": "1.9.1",
@@ -592,6 +608,70 @@
         "name": "typed_data"
       },
       "version": "1.4.0",
+      "result": {}
+    },
+    {
+      "package": {
+        "ecosystem": "Pub",
+        "name": "url_launcher"
+      },
+      "version": "6.3.3",
+      "result": {}
+    },
+    {
+      "package": {
+        "ecosystem": "Pub",
+        "name": "url_launcher_android"
+      },
+      "version": "6.3.33",
+      "result": {}
+    },
+    {
+      "package": {
+        "ecosystem": "Pub",
+        "name": "url_launcher_ios"
+      },
+      "version": "6.4.2",
+      "result": {}
+    },
+    {
+      "package": {
+        "ecosystem": "Pub",
+        "name": "url_launcher_linux"
+      },
+      "version": "3.2.3",
+      "result": {}
+    },
+    {
+      "package": {
+        "ecosystem": "Pub",
+        "name": "url_launcher_macos"
+      },
+      "version": "3.2.6",
+      "result": {}
+    },
+    {
+      "package": {
+        "ecosystem": "Pub",
+        "name": "url_launcher_platform_interface"
+      },
+      "version": "2.3.2",
+      "result": {}
+    },
+    {
+      "package": {
+        "ecosystem": "Pub",
+        "name": "url_launcher_web"
+      },
+      "version": "2.4.3",
+      "result": {}
+    },
+    {
+      "package": {
+        "ecosystem": "Pub",
+        "name": "url_launcher_windows"
+      },
+      "version": "3.1.6",
       "result": {}
     },
     {

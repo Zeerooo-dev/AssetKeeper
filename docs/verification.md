@@ -140,3 +140,9 @@ and SQLCipher libraries for all three APK architectures. GitHub Actions runs
 validation and separate Android/Linux/Windows builds before publishing a complete
 stable release. Build logs and final artifacts are available in the repository.
 This does not constitute physical Android/Windows installation acceptance.
+
+The native Linux integration test also passed after adding updates, including
+temporary secure storage and encrypted inventory reopen. Native-rendered phone
+and desktop popup captures were visually inspected. The updated OSV query checked
+92 Pub package versions and returned no matching advisories; its scope does not
+cover every native-library, OS or application-level vulnerability.

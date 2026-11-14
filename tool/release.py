@@ -48,6 +48,12 @@ def signing():
     password = os.environ['ANDROID_KEYSTORE_PASSWORD']
     if not re.fullmatch(r'[A-Za-z0-9_-]{32,}', password):
         raise ValueError('Signing password must use at least 32 safe characters')
+    certificate = subprocess.check_output(
+        ['keytool', '-exportcert', '-keystore', str(key), '-alias', 'assetkeeper',
+         '-storepass:env', 'ANDROID_KEYSTORE_PASSWORD'], stderr=subprocess.DEVNULL)
+    fingerprint = (ROOT / 'android/release-certificate.sha256').read_text().strip().lower()
+    if hashlib.sha256(certificate).hexdigest() != fingerprint:
+        raise ValueError('Private signing key does not match the public certificate fingerprint')
     config = ROOT / 'android/key.properties'
     config.write_text(f'storeFile={key.as_posix()}\nstorePassword={password}\nkeyAlias=assetkeeper\nkeyPassword={password}\n')
     config.chmod(0o600)
@@ -63,8 +69,9 @@ def package(platform):
         tools = sorted((sdk / 'build-tools').glob('*'))[-1]
         certificate = subprocess.check_output([str(tools / 'apksigner'), 'verify', '--print-certs', str(apk)], text=True)
         fingerprint = (ROOT / 'android/release-certificate.sha256').read_text().strip()
-        if f'Signer #1 certificate SHA-256 digest: {fingerprint}' not in certificate or 'CN=Android Debug' in certificate:
-            raise ValueError('APK must use the pinned production signing certificate')
+        digests = re.findall(r'certificate SHA-256 digest: ([0-9a-fA-F]{64})', certificate)
+        if not digests or {digest.lower() for digest in digests} != {fingerprint.lower()} or 'CN=Android Debug' in certificate:
+            raise ValueError(f'APK certificate mismatch: expected {fingerprint}; received {digests}. Public verifier output: {certificate}')
         info = subprocess.check_output([str(tools / 'aapt'), 'dump', 'badging', str(apk)], text=True)
         _, code = version()
         if not re.search(rf"package: name='com\.zeerooo\.assetkeeper' versionCode='{code}' versionName='{re.escape(name)}'", info):

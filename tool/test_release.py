@@ -1,4 +1,6 @@
 import json
+import base64
+import hashlib
 from pathlib import Path
 import subprocess
 import tempfile
@@ -60,10 +62,10 @@ class ReleaseTests(unittest.TestCase):
         tools = root / 'sdk/build-tools/36.0.0'
         tools.mkdir(parents=True)
         (root / 'android').mkdir()
-        (root / 'android/release-certificate.sha256').write_text('public-fingerprint')
+        (root / 'android/release-certificate.sha256').write_text('a' * 64)
         apk = root / 'build/app/outputs/flutter-apk/app-release.apk'
         apk.parent.mkdir(parents=True)
-        certificate = 'Signer #1 certificate SHA-256 digest: public-fingerprint'
+        certificate = 'Signer certificate SHA-256 digest: ' + 'A' * 64
         info = "package: name='com.zeerooo.assetkeeper' versionCode='5' versionName='1.0.4'"
         for library in ['libsqlite3.so', 'libsqlcipher.so']:
             with zipfile.ZipFile(apk, 'w') as archive:
@@ -77,6 +79,27 @@ class ReleaseTests(unittest.TestCase):
                 else:
                     release.package('android')
                     self.assertEqual((release.OUTPUT / 'AssetKeeper-v1.0.4-android.apk').read_bytes(), apk.read_bytes())
+            if library == 'libsqlcipher.so':
+                with patch.dict(release.os.environ, {'ANDROID_HOME': str(root / 'sdk')}), patch.object(
+                        release.subprocess, 'check_output', return_value='Signer certificate SHA-256 digest: ' + 'b' * 64):
+                    with self.assertRaisesRegex(ValueError, 'APK certificate mismatch'):
+                        release.package('android')
+
+    def test_restored_key_must_match_pinned_certificate(self):
+        certificate = b'public DER certificate'
+        folder = release.ROOT / 'android'
+        folder.mkdir()
+        pin = folder / 'release-certificate.sha256'
+        pin.write_text(hashlib.sha256(certificate).hexdigest())
+        with patch.dict(release.os.environ, {
+                'ANDROID_KEYSTORE_BASE64': base64.b64encode(b'private test keystore').decode(),
+                'ANDROID_KEYSTORE_PASSWORD': 'x' * 32,
+        }), patch.object(release.subprocess, 'check_output', return_value=certificate):
+            release.signing()
+            self.assertTrue((folder / 'key.properties').is_file())
+            pin.write_text('b' * 64)
+            with self.assertRaisesRegex(ValueError, 'Private signing key'):
+                release.signing()
 
 
 if __name__ == '__main__':

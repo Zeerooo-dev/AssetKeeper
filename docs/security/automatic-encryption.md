@@ -32,7 +32,7 @@ required. The Settings close button was removed.
   open. Missing/wrong keys and corrupt ciphertext did not replace stored files.
 - Legacy migration retained settings, employee records, schema version and immutable
   audit triggers. Interruption and orphan-file cases were also checked.
-- `pub-advisories.json` records the OSV Pub dependency check and timestamp. The final scan checked 82 Pub packages with zero matches. A zero
+- `pub-advisories.json` records the OSV Pub dependency check and timestamp. The update-feature scan checked 92 Pub packages with zero matches. A zero
   result only means OSV returned no matching advisories for those package versions.
   It is not a comprehensive audit of native libraries, OS components or application logic.
 - `encryption-engine.json` records the native engine versions observed in integration.
